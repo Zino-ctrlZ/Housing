@@ -1,12 +1,17 @@
-import React , {useState} from 'react'
+import React , {useState, useReducer} from 'react'
+import {reducer} from './reducer'
 
-
+const defaultState = {
+    locations: [],
+    address: ''
+}
 const Index = ()=> {
-    const [locations, setLocations] = useState([])
     const [house, setHouse] = useState({address: ''})
     const [categories, setCategories] = useState({rent: '', location: '' })
     const [catValue, setCatValue] = useState({name: ''})
     const [edit, setEdit] = useState(false)
+
+    const [state, dispatch] = useReducer(reducer, defaultState)
 
     const handleChange = (e) =>{
         const name = e.target.id
@@ -41,7 +46,9 @@ const Index = ()=> {
 
             //add new location to array 
             const newLocation = {...house, id: new Date().getMilliseconds().toString(), score: totalScore}
-            setLocations([...locations, newLocation])
+            //send dispatch with payload newLocation 
+            dispatch({type: 'ADD_LOCATION', payload: newLocation})           
+            //setLocations([...locations, newLocation])
             
             const newHouse = {address: ''}
             const setDefaultCategory = (category)=> {
@@ -118,7 +125,7 @@ const Index = ()=> {
                     
                 </form>
                  {
-                    locations.map((location) => {
+                    state.locations.map((location) => {
                     return <div className='item' key={location.id}>
                         <h4>{location.address}</h4>
                         <div>
@@ -155,7 +162,7 @@ const Index = ()=> {
                     <button className="btn" onClick={ ()=> setEdit(true)}> add new category</button>
                 </form>
                  {
-                    locations.map((location) => {
+                    state.locations.map((location) => {
                     return <div className='item' key={location.id}>
                         <h4>{location.address}</h4>
                         <div>
