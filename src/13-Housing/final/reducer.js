@@ -16,5 +16,38 @@ export const reducer = (state, action) => {
         }
     }
 
+    if(action.type === 'CHANGE_RANGE'){
+        const catDetails = action.payload
+        const newCategories = {...state.categories}
+        newCategories[catDetails[0]] = catDetails[1]
+        return{
+            ...state, 
+            categories: newCategories
+        }
+
+    }
+
+    if(action.type === 'ADD_CATEGORY'){
+        const newCategories = {...state.categories}
+        const newCatName = action.payload
+        newCategories[newCatName] = ''
+        return{
+            ...state, 
+            categories: newCategories
+        }
+    }
+
+    if(action.type === 'RESET'){
+        const newCategories = {...state.categories}
+        Object.keys(newCategories).forEach(catName => {
+            newCategories[catName] = ''
+        })
+        return{
+            ...state, 
+            address: '',
+            categories: newCategories
+        }
+        
+    }
     throw new Error('no matching action type')
 }

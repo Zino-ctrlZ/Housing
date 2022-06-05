@@ -3,13 +3,12 @@ import {reducer} from './reducer'
 
 const defaultState = {
     locations: [],
-    address: ''
+    address: '',
+    categories: {rent:'', location: ''}
 }
 const Index = ()=> {
-    const [categories, setCategories] = useState({rent: '', location: '' })
     const [catValue, setCatValue] = useState({name: ''})
     const [edit, setEdit] = useState(false)
-
     const [state, dispatch] = useReducer(reducer, defaultState)
 
     const handleChange = (e) =>{
@@ -22,11 +21,7 @@ const Index = ()=> {
         const name = e.target.name
         const value = e.target.value
         console.log(name, value)
-        setCategories((category) => {
-            const newCategories = {...category}
-            newCategories[name] = value
-            return newCategories    
-        } )
+        dispatch({type: 'CHANGE_RANGE', payload:[name, value]})
     }
 
 
@@ -35,27 +30,15 @@ const Index = ()=> {
         if(state.address && !edit){
             //calculate an average 
             let totalScore = 0 
-            Object.keys(categories).forEach(v => {
-                console.log(categories[v])
-                totalScore += Number(categories[v])
+            Object.keys(state.categories).forEach(v => {
+                totalScore += Number(state.categories[v])
             }) 
-            totalScore = totalScore / Object.keys(categories).length 
+            totalScore = totalScore / Object.keys(state.categories).length 
 
             //add new location to array 
             const newLocation = {address: state.address, id: new Date().getMilliseconds().toString(), score: totalScore}
-            dispatch({type: 'ADD_LOCATION', payload: newLocation})           
-            
-            const newHouse = {address: ''}
-            const setDefaultCategory = (category)=> {
-                const newCategory = {...category}
-                Object.keys(newCategory).forEach(v => {
-                    newCategory[v] = ''})
-                return newCategory    
-            }
-
-            const defaultCategory = setDefaultCategory(categories)
-            setCategories(defaultCategory)
-            console.log(newHouse)
+            dispatch({type: 'ADD_LOCATION', payload: newLocation}) //change this dispatch to reset          
+            dispatch({type: 'RESET'})
         }
     
     }
@@ -63,28 +46,12 @@ const Index = ()=> {
     const addNewCategory = () =>{
         if(catValue.name){
             setEdit(false)
-            const newCategory = {...categories}
-            newCategory[catValue.name] = ''
-                
-            setCategories(newCategory)
+            dispatch({type: 'ADD_CATEGORY', payload: catValue.name})
             setCatValue({name: ''})
         }
       
     }
 
-    // const Category = ({categories})=> {
-
-    //     return (
-    //          categories.map((category)=> {
-    //              return(
-    //             <div className='form-control' key={category + 1}>
-    //                 <label htmlFor={category}>{category} :  </label>
-    //                 <input type='number' min='0' max='5' id={category} name={category} value={category.value} onChange={handleRangeChange} />
-    //             </div>
-    //             )
-    //         } )
-    //     )
-    // }
     
 
     if(edit){
@@ -99,10 +66,10 @@ const Index = ()=> {
                     <h4>Categories</h4>
                     
                     {
-                        Object.keys(categories).map((category) => {
+                        Object.keys(state.categories).map((category) => {
                             return <div className='form-control' key={category + 1}>
                         <label htmlFor={category}>{category} :  </label>
-                        <input type='number' min='0' max='5' id={category} name={category} value={categories[category]} onChange={handleRangeChange} />
+                        <input type='number' min='0' max='5' id={category} name={category} value={state.categories[category]} onChange={handleRangeChange} />
                     </div>
                         })
                     }
@@ -145,10 +112,10 @@ const Index = ()=> {
                     <h4>Categories</h4>
                     
                     {
-                        Object.keys(categories).map((category) => {
+                        Object.keys(state.categories).map((category) => {
                             return <div className='form-control' key={category + 1}>
                         <label htmlFor={category}>{category} :  </label>
-                        <input type='number' min='0' max='5' id={category} name={category} value={categories[category]} onChange={handleRangeChange} />
+                        <input type='number' min='0' max='5' id={category} name={category} value={state.categories[category]} onChange={handleRangeChange} />
                     </div>
                         }) 
                     }
