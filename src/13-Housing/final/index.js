@@ -6,7 +6,6 @@ const defaultState = {
     address: ''
 }
 const Index = ()=> {
-    const [house, setHouse] = useState({address: ''})
     const [categories, setCategories] = useState({rent: '', location: '' })
     const [catValue, setCatValue] = useState({name: ''})
     const [edit, setEdit] = useState(false)
@@ -14,10 +13,8 @@ const Index = ()=> {
     const [state, dispatch] = useReducer(reducer, defaultState)
 
     const handleChange = (e) =>{
-        const name = e.target.id
         const value =  e.target.value
-       
-        setHouse({...house, [name]: value })
+        dispatch({type:'CHANGE_ADDRESS', payload:value})  
     }
 
     const handleRangeChange = (e) =>{
@@ -35,7 +32,7 @@ const Index = ()=> {
 
     const handleSubmit = (e) =>{
         e.preventDefault() 
-        if(house.address && !edit){
+        if(state.address && !edit){
             //calculate an average 
             let totalScore = 0 
             Object.keys(categories).forEach(v => {
@@ -45,10 +42,8 @@ const Index = ()=> {
             totalScore = totalScore / Object.keys(categories).length 
 
             //add new location to array 
-            const newLocation = {...house, id: new Date().getMilliseconds().toString(), score: totalScore}
-            //send dispatch with payload newLocation 
+            const newLocation = {address: state.address, id: new Date().getMilliseconds().toString(), score: totalScore}
             dispatch({type: 'ADD_LOCATION', payload: newLocation})           
-            //setLocations([...locations, newLocation])
             
             const newHouse = {address: ''}
             const setDefaultCategory = (category)=> {
@@ -61,7 +56,6 @@ const Index = ()=> {
             const defaultCategory = setDefaultCategory(categories)
             setCategories(defaultCategory)
             console.log(newHouse)
-            return setHouse(newHouse)
         }
     
     }
@@ -100,7 +94,7 @@ const Index = ()=> {
                 <form className="form" onSubmit={handleSubmit}>
                     <div className='form-control'>
                         <label htmlFor="address">Address : </label>
-                        <input type="text" id='address' name='address' value={house.address} onChange={handleChange} />
+                        <input type="text" id='address' name='address' value={state.address} onChange={handleChange} />
                     </div>
                     <h4>Categories</h4>
                     
@@ -146,7 +140,7 @@ const Index = ()=> {
                 <form className="form" onSubmit={handleSubmit}>
                     <div className='form-control'>
                         <label htmlFor="address">Address : </label>
-                        <input type="text" id='address' name='address' value={house.address} onChange={handleChange} />
+                        <input type="text" id='address' name='address' value={state.address} onChange={handleChange} />
                     </div>
                     <h4>Categories</h4>
                     
