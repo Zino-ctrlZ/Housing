@@ -1,10 +1,9 @@
-import logo from './logo.svg';
-import './App.css';
-import Housing from './13-Housing/final/index'
+import "./App.css";
+import Housing from "./13-Housing/final/index";
 
 function App() {
   return (
-    <div className="container">
+    <div className="container--map">
       <Housing></Housing>
     </div>
   );

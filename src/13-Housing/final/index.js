@@ -1,10 +1,11 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useMemo } from "react";
 import { reducer } from "./reducer";
 
 import {
   GoogleMap,
   useJsApiLoader,
-  useLoadScript,
+  Marker,
+  Autocomplete,
 } from "@react-google-maps/api";
 
 const defaultState = {
@@ -59,13 +60,12 @@ const Index = () => {
     }
   };
 
-  if (edit) {
-    return (
-      <>
-        <article>
-          <form className="form" onSubmit={handleSubmit}>
-            <div className="form-control">
-              <label htmlFor="address">Address : </label>
+  return (
+    <>
+      <article>
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="form-control">
+            <label htmlFor="address">Address : </label>
               <input
                 type="text"
                 id="address"
@@ -73,32 +73,36 @@ const Index = () => {
                 value={state.address}
                 onChange={handleChange}
               />
-            </div>
-            <h4>Categories</h4>
+          </div>
+          <h4>Categories</h4>
 
-            {Object.keys(state.categories).map((category) => {
-              return (
-                <div className="form-control" key={category + 1}>
-                  <label htmlFor={category}>{category} : </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="5"
-                    id={category}
-                    name={category}
-                    value={state.categories[category]}
-                    onChange={handleRangeChange}
-                  />
-                  <input list="relevance" id="relevance"></input>
-                  {/* <select id="relevance" onChange={selectChange}>
-                    <option value="3">important</option>
-                    <option value="2">preferred</option>
-                    <option value="1">convenience</option>
-                  </select> */}
-                </div>
-              );
-            })}
+          {Object.keys(state.categories).map((category) => {
+            return (
+              <div className="form-control" key={category + 1}>
+                <label htmlFor={category}>{category} : </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  id={category}
+                  name={category}
+                  value={state.categories[category]}
+                  onChange={handleRangeChange}
+                />
+              </div>
+            );
+          })}
+          <button className="button" onClick={handleSubmit}>
+            compute
+          </button>
+          <button className="btn" onClick={() => setEdit(!edit)}>
+            {" "}
+            add new category
+          </button>
+        </form>
 
+        {edit && (
+          <form className="form">
             <h4>Enter new category name</h4>
             <div className="form-control">
               <label htmlFor="categoryName">category name : </label>
@@ -117,66 +121,7 @@ const Index = () => {
               submit
             </button>
           </form>
-          {state.locations.map((location) => {
-            return (
-              <div className="item" key={location.id}>
-                <h4>{location.address}</h4>
-                <div>
-                  <label htmlFor="score">Total Score : {location.score} </label>
-                </div>
-              </div>
-            );
-          })}
-        </article>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <article>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="form-control">
-            <label htmlFor="address">Address : </label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value={state.address}
-              onChange={handleChange}
-            />
-          </div>
-          <h4>Categories</h4>
-
-          {Object.keys(state.categories).map((category) => {
-            return (
-              <div className="form-control" key={category + 1}>
-                <label htmlFor={category}>{category} : </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  id={category}
-                  name={category}
-                  value={state.categories[category]}
-                  onChange={handleRangeChange}
-                />
-                {/* <select id="relevance" onChange={selectChange}>
-                  <option value="important">important</option>
-                  <option value="preferred">preferred</option>
-                  <option value="convenience">convenience</option>
-                </select> */}
-              </div>
-            );
-          })}
-          <button className="button" onClick={handleSubmit}>
-            compute
-          </button>
-          <button className="btn" onClick={() => setEdit(true)}>
-            {" "}
-            add new category
-          </button>
-        </form>
+        )}
         <div className="list--house">
           {state.locations.map((location) => {
             return (
@@ -192,8 +137,10 @@ const Index = () => {
 };
 
 const Map = () => {
-  const { isLoaded } = useLoadScript({
+  const center = useMemo(() => ({ lat: 44, lng: -80 }), []);
+  const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_MAPS,
+    libraries: ["places"],
   });
   if (!isLoaded) {
     return <p>Loading</p>;
@@ -202,11 +149,20 @@ const Map = () => {
   return (
     <GoogleMap
       zoom={10}
-      center={{ lat: 44, lng: -80 }}
+      center={center}
       mapContainerClassName="map"
-    ></GoogleMap>
+      options={{
+        zoomControl: false,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+      }}
+    >
+      <Marker position={center}></Marker>
+    </GoogleMap>
   );
 };
+
 
 const House = (props) => {
   if (!props.hasMap) {
