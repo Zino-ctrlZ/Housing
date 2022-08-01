@@ -321,11 +321,12 @@ p {
 
 /* Zino's CSS additions */
 .map {
-  height: 25vh;
-  width: 25vw;
+  height: 20rem; 
+  width: 20rem;
   margin: auto;
   display: inline-block;
   border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .container--map {
@@ -337,17 +338,41 @@ p {
   display: inline-block;
   flex-direction: column;
   background: var(--clr-white);
-  max-width: var(--fixed-width);
+  /* width: var(--fixed-width);  */
+  /* max-width: var(--fixed-width); */
+  text-align: center; 
   border: 2px solid grey;
-  margin: 0 auto;
-  margin-right: 2rem;
-  margin-bottom: 4rem;
+  margin: 10px 10px;
   padding: 1rem 2rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius); 
+  overflow: hidden; 
+  white-space: nowrap; 
+  /* text-overflow: ellipsis ; */
 }
 
+/*for mobile */
+@media screen and (max-width: 780px) {
+  .item--house
+{
+  display: block; 
+  flex-direction: row;
+  margin: 0 auto;
+  margin-bottom: 10px;
+  max-width: var(--fixed-width);
+}}
 .list--house {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
 }
+
+.list--house::-webkit-scrollbar {
+  width: 2px; 
+  height: 5px;
+}
+
+.list--house::-webkit-scrollbar-thumb{
+  background: #666; 
+  border-radius: 10px; 
+}
+

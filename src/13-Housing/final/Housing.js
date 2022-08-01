@@ -45,6 +45,7 @@ const Index = () => {
       const newLocation = {
         address: state.address,
         id: new Date().getMilliseconds().toString(),
+        categories: state.categories, 
         score: totalScore,
       };
       dispatch({ type: "ADD_LOCATION", payload: newLocation }); //change this dispatch to reset
@@ -165,23 +166,29 @@ const Map = () => {
 
 
 const House = (props) => {
+
+  const [hover, setHover] = useState(false)
   if (!props.hasMap) {
     console.log(`hasMap is ${props.hasMap}`);
     return (
       <>
         <h4>{props.location.address}</h4>
-        <div>
           <label htmlFor="score">Total Score : {props.location.score} </label>
-        </div>
+          <ul className="categories">{Object.keys(props.locations.categories).forEach((v) => {
+            return <li key={v + 1}>{`${v} : ${props.locations[v]}`}</li>
+          })})</ul>
       </>
     );
   }
 
   return (
     <>
-      <h4>{props.location.address}</h4>
-      <div>
-        <label htmlFor="score">Total Score : {props.location.score} </label>
+      <div onMouseEnter={()=> setHover(true)} onMouseLeave={()=> setHover(false)}>
+           <h4>{props.location.address}</h4>
+          <label htmlFor="score">Total Score : {props.location.score} </label>
+          {hover && <ul className="categories">{props.location.categories && Object.keys(props.location.categories).map((v) => {
+              return <li>{`${v} : ${props.location.categories[v]}`}</li>
+            })}</ul>}
       </div>
       <Map></Map>
     </>
