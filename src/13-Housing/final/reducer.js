@@ -37,6 +37,15 @@ export const reducer = (state, action) => {
         }
     }
 
+    if (action.type === 'REMOVE_CATEGORY') {
+        const newCategories = { ...state.categories }
+        const category = action.payload 
+        delete newCategories[category]
+        return {
+            ...state, 
+            categories: newCategories
+        }
+    }
     if(action.type === 'RESET'){
         const newCategories = {...state.categories}
         Object.keys(newCategories).forEach(catName => {

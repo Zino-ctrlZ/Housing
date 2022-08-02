@@ -341,7 +341,9 @@ p {
   /* width: var(--fixed-width);  */
   /* max-width: var(--fixed-width); */
   text-align: center; 
-  border: 2px solid grey;
+  background: var(--clr-white);
+  border: 2px solid var(--clr-white);
+  box-shadow: 0px 0px 5px var(--clr-grey-1);
   margin: 10px 10px;
   padding: 1rem 2rem;
   border-radius: var(--radius); 
@@ -376,3 +378,13 @@ p {
   border-radius: 10px; 
 }
 
+ .btn--cancel {
+  display: inline; 
+  height: 25px; 
+  width: 25px;
+  border-radius: 50%; 
+}
+
+.category--input{
+  justify-content: space-between;
+}

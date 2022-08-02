@@ -6,32 +6,24 @@ import {
   useJsApiLoader,
   Marker,
   Autocomplete,
+  DirectionsService,
+  DirectionsRenderer,
 } from "@react-google-maps/api";
+import { useEffect } from "react";
 
 const defaultState = {
   locations: [],
   address: "",
   categories: { rent: "", location: "" },
 };
+
+var loadedState 
 const Index = () => {
   const [catValue, setCatValue] = useState({ name: "" });
   const [edit, setEdit] = useState(false);
   const [state, dispatch] = useReducer(reducer, defaultState);
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    dispatch({ type: "CHANGE_ADDRESS", payload: value });
-  };
-
-  const handleRangeChange = (e) => {
-    e.preventDefault();
-    const name = e.target.name;
-    const value = e.target.value;
-    console.log(name, value);
-    dispatch({ type: "CHANGE_RANGE", payload: [name, value] });
-  };
-
-  const handleSubmit = (e) => {
+  const submit = (e) => {
     e.preventDefault();
     if (state.address && !edit) {
       //calculate an average
@@ -64,16 +56,19 @@ const Index = () => {
   return (
     <>
       <article>
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="form" onSubmit={submit}>
           <div className="form-control">
             <label htmlFor="address">Address : </label>
-              <input
+            {/* <Autocomplete> */}
+               <input
                 type="text"
                 id="address"
                 name="address"
                 value={state.address}
-                onChange={handleChange}
+                onChange={(e)=>{dispatch({ type: "CHANGE_ADDRESS", payload: e.target.value });}}
               />
+            {/* </Autocomplete> */}
+             
           </div>
           <h4>Categories</h4>
 
@@ -81,19 +76,22 @@ const Index = () => {
             return (
               <div className="form-control" key={category + 1}>
                 <label htmlFor={category}>{category} : </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="5"
-                  id={category}
-                  name={category}
-                  value={state.categories[category]}
-                  onChange={handleRangeChange}
-                />
+                <div className="category--input">
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    id={category}
+                    name={category}
+                    value={state.categories[category]}
+                    onChange={(e)=> {dispatch({ type: "CHANGE_RANGE", payload: [e.target.name, e.target.value] });}}
+                  />
+                <button onClick={() => {dispatch({type: "REMOVE_CATEGORY", payload: category })}}><div className="btn--cancel">X</div></button>
+                </div>
               </div>
             );
           })}
-          <button className="button" onClick={handleSubmit}>
+          <button className="button" onClick={submit}>
             compute
           </button>
           <button className="btn" onClick={() => setEdit(!edit)}>
@@ -102,6 +100,7 @@ const Index = () => {
           </button>
         </form>
 
+        {/* Add new category form */}
         {edit && (
           <form className="form">
             <h4>Enter new category name</h4>
@@ -127,7 +126,7 @@ const Index = () => {
           {state.locations.map((location) => {
             return (
               <div className="item--house" key={location.id}>
-                <House location={location} hasMap={"false"}></House>
+                <House location={location} hasMap={"false"} ></House>
               </div>
             );
           })}
@@ -137,37 +136,11 @@ const Index = () => {
   );
 };
 
-const Map = () => {
-  const center = useMemo(() => ({ lat: 44, lng: -80 }), []);
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_MAPS,
-    libraries: ["places"],
-  });
-  if (!isLoaded) {
-    return <p>Loading</p>;
-  }
-  console.log("isLoaded", isLoaded);
-  return (
-    <GoogleMap
-      zoom={10}
-      center={center}
-      mapContainerClassName="map"
-      options={{
-        zoomControl: false,
-        streetViewControl: false,
-        mapTypeControl: false,
-        fullscreenControl: false,
-      }}
-    >
-      <Marker position={center}></Marker>
-    </GoogleMap>
-  );
-};
-
 
 const House = (props) => {
 
   const [hover, setHover] = useState(false)
+ 
   if (!props.hasMap) {
     console.log(`hasMap is ${props.hasMap}`);
     return (
@@ -190,8 +163,59 @@ const House = (props) => {
               return <li>{`${v} : ${props.location.categories[v]}`}</li>
             })}</ul>}
       </div>
-      <Map></Map>
+      {/* <Map address={props.location.address}></Map> */}
     </>
   );
 };
+
+const Map = ({address}) => {
+  const center = useMemo(() => ({ lat: 44, lng: -80 }), []);
+ 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.REACT_APP_MAPS,
+    libraries: ["places"],
+  });
+  const [map, setMap] = useState(/** @type google.maps.Map */(null))
+  const [directionsResponse, setDirectionsResponse] = useState(null)
+
+  useEffect(() => {
+    calculateRoute() 
+  }, [])
+  async function calculateRoute() {
+    if (!address) return
+    //eslint-disable-next-line no-undef
+    const directionsService = new google.maps.DirectionsService()
+    const results = await directionsService.route({
+      origin: address,
+      destination: "515 North 6th Street, St. Louis, Missouri, United States", 
+      //eslint-disable-next-line no-undef
+      travelMode: google.maps.TravelMode.DRIVING
+    })
+    console.log('address: ', address)
+    console.log('result:', results)
+    setDirectionsResponse(results)
+  }
+  if (!isLoaded) {
+    return <p>Loading</p>;
+  }
+  return (
+    <GoogleMap
+      zoom={5}
+      center={center}
+      mapContainerClassName="map"
+      options={{
+        zoomControl: false,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+      }}
+      onLoad={map => setMap(map)}
+    >
+      <Marker position={center}></Marker>
+      {directionsResponse && <DirectionsRenderer directions={directionsResponse}/>}
+    </GoogleMap>
+  );
+};
+
+
 export default Index;
