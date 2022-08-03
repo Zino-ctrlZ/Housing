@@ -55,7 +55,16 @@ const Index = () => {
 
   return (
     <>
-      <article>
+    <header>
+      <div className="container--header">
+            <h1><a href="/">The Apartment Ranker.</a></h1>
+            <nav>
+                <a href="#">Home</a>
+                <a href="https://github.com/">Contact</a>
+            </nav>
+        </div>
+    </header>
+      <main>
         <form className="form" onSubmit={submit}>
           <div className="form-control">
             <label htmlFor="address">Address : </label>
@@ -131,7 +140,7 @@ const Index = () => {
             );
           })}
         </div>
-      </article>
+      </main>
     </>
   );
 };
@@ -163,7 +172,7 @@ const House = (props) => {
               return <li>{`${v} : ${props.location.categories[v]}`}</li>
             })}</ul>}
       </div>
-      {/* <Map address={props.location.address}></Map> */}
+      <Map address={props.location.address}></Map>
     </>
   );
 };
