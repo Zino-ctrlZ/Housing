@@ -55,12 +55,13 @@ const Index = () => {
 
   return (
     <>
+      {/* header  */}
     <header>
       <div className="container--header">
             <h1><a href="/">The Apartment Ranker.</a></h1>
             <nav>
-                <a href="#">Home</a>
-                <a href="https://github.com/">Contact</a>
+                <a className="btn--nav from-top" href="#">Home</a>
+                <a className="btn--nav from-top" href="https://github.com/">Contact</a>
             </nav>
         </div>
     </header>
