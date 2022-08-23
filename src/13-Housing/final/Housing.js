@@ -69,7 +69,7 @@ const Index = () => {
         <form className="form" onSubmit={submit}>
           <div className="form-control">
             <label htmlFor="address">Address : </label>
-            {/* <Autocomplete> */}
+            <Autocomplete>
                <input
                 type="text"
                 id="address"
@@ -77,7 +77,7 @@ const Index = () => {
                 value={state.address}
                 onChange={(e)=>{dispatch({ type: "CHANGE_ADDRESS", payload: e.target.value });}}
               />
-            {/* </Autocomplete> */}
+            </Autocomplete>
              
           </div>
           <h4>Categories</h4>
