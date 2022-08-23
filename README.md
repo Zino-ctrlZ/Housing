@@ -1,8 +1,7 @@
-title: The Apartment Ranker
-author: Zino
+Author: Zino
 
 
-# Location ranker app 
+# The Aparment Ranker.
 This app makes use of react features such as useReducer, useState, and useEffect to develop a location ranker app. This location ranker app makes use of google maps api to display a route from a location to a centralized location. 
 
 
